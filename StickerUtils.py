@@ -52,7 +52,6 @@ uniform mat4 proj_mat;
 
 
 vec4 vertex(){{
-    gl_PointSize = 20.0;
     v_TexCoord = a_TexCoord;
     v_Normal = a_Normal;
     return proj_mat * model_mat * vec4(a_Position, 1.0);
@@ -69,7 +68,7 @@ uniform sampler2D u_Albedo;
 
 vec4 fragment(){{
     vec4 texColor = texture2D( u_Albedo, v_TexCoord);
-    return vec4(texColor.rgb, texColor.a * 0.3);
+    return vec4(texColor.rgba);
 }}
 
 #type shader_data

@@ -7,8 +7,10 @@ from PyQt6.QtWidgets import (
 	QLabel, 
 	QVBoxLayout, 
 	QHBoxLayout, 
-	QGroupBox, 
+	QGroupBox,
+	QCheckBox,
 )
+from PIL import Image, ImageOps
 from StorageUtils import *
 from PyQt6.QtCore import pyqtSlot ,Qt
 from LabelEditText import LabelEditText
@@ -39,6 +41,12 @@ class MainWidget(QMainWindow):
 		### sticker name label
 		self.inputTB_V = LabelEditText("Filter version:")
 		layout.addWidget(self.inputTB_V)
+		###
+
+		### flip - chceck
+		self.inputCBFlip = QCheckBox("Filp")
+		self.inputCBFlip.setChecked( False )
+		layout.addWidget( self.inputCBFlip )
 		###
 
 		### button select
@@ -114,6 +122,14 @@ class MainWidget(QMainWindow):
 			json.dump({'last' : oDir} ,F)
 
 		iDir = selectedFiles[0]
+		if(self.inputCBFlip.isChecked()):
+			imageObject = Image.open(iDir)
+			imageObject_Flip = ImageOps.flip(imageObject)
+			new_iDir = "".join(iDir.split(".")[:-1]) + "_flipped." + iDir.split(".")[-1]
+			print(iDir, new_iDir)
+			imageObject_Flip.save(new_iDir, quality=100)
+			iDir = new_iDir
+
 		name = self.inputTB.getText()
 		v = self.inputTB_V.getText()
 		transformAndSave(name, v, iDir, oDir)

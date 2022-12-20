@@ -2,7 +2,7 @@ import sys, os
 import subprocess, shlex
 import json
 import shutil
-from StickerUtils import *
+from FilterUtils import *
 
 def getLocationsFile():
 	return os.path.join(os.path.expanduser('~'), "Documents/locations.json")
@@ -18,14 +18,21 @@ def zipDir( dirLocation : str, outputLocation : str ):
 def createFilterFiles( filterName : str,\
     filterVersion : str,\
     filterImageDir : str,\
-    outputLocation : str  ) -> str:
+    outputLocation : str, \
+    customResourceData : str = ""  ) -> str:
     # create new folder to zip
     # add index, sticker, png files
     os.system(f"mkdir {filterName}")
     os.system(f'cp "{filterImageDir}" {filterName}/{filterName}.png')
     os.system(f'echo "{getIndexFileData(filterName, filterVersion)}" > {filterName}/index.yaml')
     os.system(f'echo "{getShaderData(filterName + ".png")}" > {filterName}/facemask.mat')
-    os.system(f'echo "{getResourceFIle()}" > {filterName}/resource.json')
+
+    # test custom resource
+    if( customResourceData != "" ):
+        os.system(f'echo "{customResourceData}" > {filterName}/resource.json')
+    else:
+        os.system(f'echo "{getResourceFIle()}" > {filterName}/resource.json')
+
     return os.path.join(os.getcwd(), filterName)
 
 def deleteFiles( location : str ):
@@ -36,12 +43,15 @@ def transformAndSave(
     filterName : str,\
     filterVersion : str,\
     filterImageDir : str,\
-    outputLocation : str ):
+    outputLocation : str, \
+    customResourceData : str = "" ):
     
-    s = createFilterFiles( filterName, filterVersion, filterImageDir, outputLocation )
+    s = createFilterFiles( filterName, filterVersion, filterImageDir, outputLocation, customResourceData )
     zipDir( s, f"{outputLocation}/{filterName}" )
     deleteFiles( s )
     print(filterName, filterVersion, filterImageDir, outputLocation)
 
+def mapToJsonString(map : dict) -> str : 
+    return json.dumps(map).replace('"', '\\"') # for shell formatting
 
     

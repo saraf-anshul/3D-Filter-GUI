@@ -1,5 +1,6 @@
 altgraph==0.17.2
 macholib==1.16
+Pillow==9.3.0
 pyinstaller==5.4.1
 pyinstaller-hooks-contrib==2022.10
 PyQt5-sip==12.11.0

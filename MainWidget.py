@@ -13,8 +13,10 @@ from PyQt6.QtWidgets import (
 from PIL import Image, ImageOps
 from StorageUtils import *
 from PyQt6.QtCore import pyqtSlot ,Qt
-from LabelEditText import LabelEditText
+from LabelEditText import LabelEditText, LabelEditTextGroup
 from FileInfoAndSelectorBox import FileInfoAndSelectorBox
+
+from FilterUtils import getResourceMap
 
 
 class MainWidget(QMainWindow):
@@ -25,12 +27,16 @@ class MainWidget(QMainWindow):
 		super().__init__()
 		
 		### window attrs
-		self.setWindowTitle("3D Filter GUI")
-		self.resize(300, 300)
+		self.setWindowTitle("Filter Resource GUI")
+		self.resize(750, 300)
 		wid = QWidget(self)
 		self.setCentralWidget(wid)
 		layout = QVBoxLayout()
 		wid.setLayout(layout)
+		###
+		
+		### variables
+		self.customResourceData = getResourceMap()
 		###
 
 		### sticker name label
@@ -46,12 +52,20 @@ class MainWidget(QMainWindow):
 		### flip - chceck
 		self.inputCBFlip = QCheckBox("Filp")
 		self.inputCBFlip.setChecked( False )
+		self.inputCBFlip.setStyleSheet("QCheckBox {padding : 10px;}")
 		layout.addWidget( self.inputCBFlip )
 		###
 
 		### button select
 		self.stickerFileIn = FileInfoAndSelectorBox("Filter", "png", 1)
 		layout.addWidget(self.stickerFileIn)
+		###
+
+		### resource info panel
+		self.labelETGroup = LabelEditTextGroup()
+		for i in range(len(self.customResourceData["Assets"])):
+			self.labelETGroup.add(LabelEditText( self.customResourceData["Assets"][i]["Name"], None, self.customResourceData["Assets"][i]["Url"] ))
+		layout.addWidget(self.labelETGroup)
 		###
 
 		### out-file dir select
@@ -109,7 +123,7 @@ class MainWidget(QMainWindow):
 		if dirName:
 			print(dirName)
 			self.updateSaveLocation(dirName)
-	
+
 	@pyqtSlot()
 	def run_script(self):
 		oDir = self.saveLocation
@@ -132,7 +146,14 @@ class MainWidget(QMainWindow):
 
 		name = self.inputTB.getText()
 		v = self.inputTB_V.getText()
-		transformAndSave(name, v, iDir, oDir)
+		editResourceData = self.labelETGroup.getValues()
+		for i in range(len(self.customResourceData["Assets"])):
+			assetName = self.customResourceData["Assets"][i]["Name"]
+			self.customResourceData["Assets"][i]["Url"] = editResourceData[assetName]
+		
+		print(mapToJsonString(self.customResourceData))
+		
+		transformAndSave(name, v, iDir, oDir, mapToJsonString(self.customResourceData))
 
 	def updateSaveLocation(self, loc):
 		self.labelOut.setText(loc)

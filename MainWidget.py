@@ -27,7 +27,7 @@ class MainWidget(QMainWindow):
 		super().__init__()
 		
 		### window attrs
-		self.setWindowTitle("Filter Resource GUI")
+		self.setWindowTitle("3D Filter GUI")
 		self.resize(750, 300)
 		wid = QWidget(self)
 		self.setCentralWidget(wid)
@@ -152,7 +152,7 @@ class MainWidget(QMainWindow):
 			self.customResourceData["Assets"][i]["Url"] = editResourceData[assetName]
 		
 		print(mapToJsonString(self.customResourceData))
-		
+
 		transformAndSave(name, v, iDir, oDir, mapToJsonString(self.customResourceData))
 
 	def updateSaveLocation(self, loc):

@@ -19,6 +19,7 @@ def createFilterFiles( filterName : str,\
     filterVersion : str,\
     filterImageDir : str,\
     outputLocation : str, \
+    textureFlipped : bool, \
     customResourceData : str = ""  ) -> str:
     # create new folder to zip
     # add index, sticker, png files
@@ -26,12 +27,13 @@ def createFilterFiles( filterName : str,\
     os.system(f'cp "{filterImageDir}" {filterName}/{filterName}.png')
     os.system(f'echo "{getIndexFileData(filterName, filterVersion)}" > {filterName}/index.yaml')
     os.system(f'echo "{getShaderData(filterName + ".png")}" > {filterName}/facemask.mat')
+    os.system(f'echo "{getShaderDataMetal(filterName + ".png", bool(textureFlipped))}" > {filterName}/facemask-Metal.mat')
 
     # test custom resource
     if( customResourceData != "" ):
         os.system(f'echo "{customResourceData}" > {filterName}/resource.json')
     else:
-        os.system(f'echo "{getResourceFIle()}" > {filterName}/resource.json')
+        os.system(f'echo "{mapToJsonString(getResourceMap())}" > {filterName}/resource.json')
 
     return os.path.join(os.getcwd(), filterName)
 
@@ -44,9 +46,10 @@ def transformAndSave(
     filterVersion : str,\
     filterImageDir : str,\
     outputLocation : str, \
+    textureFlipped : bool, \
     customResourceData : str = "" ):
     
-    s = createFilterFiles( filterName, filterVersion, filterImageDir, outputLocation, customResourceData )
+    s = createFilterFiles( filterName, filterVersion, filterImageDir, outputLocation, textureFlipped,customResourceData )
     zipDir( s, f"{outputLocation}/{filterName}" )
     deleteFiles( s )
     print(filterName, filterVersion, filterImageDir, outputLocation)

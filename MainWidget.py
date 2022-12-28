@@ -28,7 +28,7 @@ class MainWidget(QMainWindow):
 		
 		### window attrs
 		self.setWindowTitle("3D Filter GUI")
-		self.resize(750, 300)
+		self.resize(800, 300)
 		wid = QWidget(self)
 		self.setCentralWidget(wid)
 		layout = QVBoxLayout()
@@ -50,7 +50,7 @@ class MainWidget(QMainWindow):
 		###
 
 		### flip - chceck
-		self.inputCBFlip = QCheckBox("Filp")
+		self.inputCBFlip = QCheckBox("Filp Image + Set Flags in Shader[IOS]")
 		self.inputCBFlip.setChecked( False )
 		self.inputCBFlip.setStyleSheet("QCheckBox {padding : 10px;}")
 		layout.addWidget( self.inputCBFlip )
@@ -136,6 +136,7 @@ class MainWidget(QMainWindow):
 			json.dump({'last' : oDir} ,F)
 
 		iDir = selectedFiles[0]
+		textureflipped = False
 		if(self.inputCBFlip.isChecked()):
 			imageObject = Image.open(iDir)
 			imageObject_Flip = ImageOps.flip(imageObject)
@@ -143,6 +144,7 @@ class MainWidget(QMainWindow):
 			print(iDir, new_iDir)
 			imageObject_Flip.save(new_iDir, quality=100)
 			iDir = new_iDir
+			textureflipped = True
 
 		name = self.inputTB.getText()
 		v = self.inputTB_V.getText()
@@ -153,7 +155,7 @@ class MainWidget(QMainWindow):
 		
 		print(mapToJsonString(self.customResourceData))
 
-		transformAndSave(name, v, iDir, oDir, mapToJsonString(self.customResourceData))
+		transformAndSave(name, v, iDir, oDir, textureflipped,  mapToJsonString(self.customResourceData))
 
 	def updateSaveLocation(self, loc):
 		self.labelOut.setText(loc)
